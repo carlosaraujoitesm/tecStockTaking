@@ -16,6 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+
+            
+
+
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -32,70 +38,39 @@ var app = {
     },
 
     onDeviceReady: function(){
+
+            //Listen to Tag RFID
             nfc.addTagDiscoveredListener(
-            app.onNfc,  //tag successfully scanned
-            function(status){
-                app.display("Tap a tag to read its id number.");
-            },
-            function(error){
-                app.display("NFC reader failed to initialize " + JSON.stringify(error));
-            }
-            );
-            nfc.addNdefFormatableListener(
-                app.onNonNdef,
-                function (status) {
-                    // listener successfully initialized
-                    app.display("Listening for NDEF Formatable tags.");
+                app.onNonNdef,  //Tag successfully scanned
+                function(status){
                 },
-                function (error) {
-                    // listener fails to initialize
-                    app.display("NFC reader failed to initialize "
-                    + JSON.stringify(error));
+                function(error){
+                    app.display("NFC reader failed to initialize " + JSON.stringify(error),'messageDiv');
                 }
             );
-
+            
+            //Listen to NDEF tags
             nfc.addNdefListener(
                 app.onNfc,
-                // tag successfully scanned
+                // Tag successfully scanned
                 function (status) {
-                // listener successfully initialized
-                app.display("Listening for NDEF messages.");
+                // Listener successfully initialized
                 },
                 function (error) {
-                // listener fails to initialize
+                // Listener fails to initialize
                 app.display("NFC reader failed to initialize "
                 + JSON.stringify(error));
                 }
             );
-
-            nfc.addMimeTypeListener(
-                "text/plain",
-                app.onNfc,
-                // tag successfully scanned
-                function (status) {
-                // listener successfully initialized
-                app.display("Listening for plain text MIME Types.");
-                },
-                function (error) {
-                // listener fails to initialize
-                app.display("NFC reader failed to initialize "
-                + JSON.stringify(error));
-                }
-            );
-            app.display("Tap a tag to read data.");
-
-
     },
 
     /*
     Process NDEF tag data from the nfcEvent
     */
     onNfc: function(nfcEvent) {
-        app.clear();
-        // clear the message div
-        // display the event type:
-        app.display(" Event Type: " + nfcEvent.type);
-        app.showTag(nfcEvent.tag);
+        app.clear('messageDiv');
+        app.display("Event Type: " + nfcEvent.type,'messageDiv');
+        //app.showTag(nfcEvent.tag);
         // display the tag details
     },
         /*
@@ -108,42 +83,37 @@ var app = {
         */
     
     onNonNdef: function(nfcEvent) {
-        app.clear();
-        // clear the message div
-        // display the event type:
-        app.display("Event Type: " + nfcEvent.type);
+        app.clear('messageDiv');
+        app.display("Event Type: " + nfcEvent.type,'messageDiv');
         var tag = nfcEvent.tag;
-        app.display("Tag ID: " + nfc.bytesToHexString(tag.id));
-        app.display("Tech Types: ");
-        for (var i = 0; i < tag.techTypes.length; i++) {
-        app.display(" * " + tag.techTypes[i]);
-        }
+        app.display("Tag ID: " + nfc.bytesToHexString(tag.id),'messageDiv'); 
     },
     /*
     writes @tag to the message div:
     */
     showTag: function(tag) {
-    // display the tag properties:
-    app.display("Tag ID: " + nfc.bytesToHexString(tag.id));
-    app.display("Tag Type: " + tag.type);
-    app.display("Max Size: " + tag.maxSize + " bytes");
-    app.display("Is Writable: " + tag.isWritable);
-    app.display("Can Make Read Only: " + tag.canMakeReadOnly);
+        // Display user info
+        app.clear();
+        app.display("Event Type: " + nfcEvent.type,'divId');
+        app.display("Tag ID: " + nfc.bytesToHexString(tag.id));
+        app.display("Tag Type: " + tag.type);
+        app.display("Max Size: " + tag.maxSize + " bytes");
+        app.display("Is Writable: " + tag.isWritable);
+        app.display("Can Make Read Only: " + tag.canMakeReadOnly);
 
 
         // if there is an NDEF message on the tag, display it:
-    var thisMessage = tag.ndefMessage;
-    if (thisMessage !== null) {
-        // get and display the NDEF record count:
-        app.display("Tag has NDEF message with " + thisMessage.length
-        + " record" + (thisMessage.length === 1 ? ".":"s."));
-        app.display("Message Contents: ");
-        app.showMessage(thisMessage);
-    }
+        var thisMessage = tag.ndefMessage;
+        if (thisMessage !== null) {
+            // get and display the NDEF record count:
+            app.display("Tag has NDEF message with " + thisMessage.length
+            + " record" + (thisMessage.length === 1 ? ".":"s."));
+            app.display("Message Contents: ");
+            app.showMessage(thisMessage);
+        }
 
 
     },
-
 
     /*
     iterates over the records in an NDEF message to display them:
@@ -177,16 +147,22 @@ var app = {
     },
 
 
-    display: function(message){
+    display: function(message, div){
+        
         var label = document.createTextNode(message),
         linebreak = document.createElement("br");
-        messageDiv.appendChild(linebreak);
-        messageDiv.appendChild(label);
+
+
+        elem = document.getElementById(div);
+        elem.appendChild(linebreak);
+        elem.appendChild(label);
+     
 
     },
 
-    clear: function(){
-        messageDiv.innerHTML = "";
+    clear: function(div){
+        elem = document.getElementById(div);
+        elem.innerHTML = "";
     }
 
     
