@@ -21,8 +21,9 @@
             
 
 
-
 var app = {
+
+    id : "perra yiann",
     // Application Constructor
     initialize: function() {
         this.bindEvents();
@@ -43,9 +44,10 @@ var app = {
             nfc.addTagDiscoveredListener(
                 app.onNonNdef,  //Tag successfully scanned
                 function(status){
+                    
                 },
                 function(error){
-                    app.display("NFC reader failed to initialize " + JSON.stringify(error),'messageDiv');
+                    app.display("NFC reader failed to initialize " + JSON.stringify(error));
                 }
             );
             
@@ -58,8 +60,7 @@ var app = {
                 },
                 function (error) {
                 // Listener fails to initialize
-                app.display("NFC reader failed to initialize "
-                + JSON.stringify(error));
+                app.display("NFC reader failed to initialize " + JSON.stringify(error));
                 }
             );
     },
@@ -73,46 +74,21 @@ var app = {
         //app.showTag(nfcEvent.tag);
         // display the tag details
     },
-        /*
-        Process non-NDEF tag data from the nfcEvent
-        This includes
-        * Non NDEF NFC Tags
-        * NDEF-Formatable Tags
-        * Mifare Classic Tags on Nexus 4, Samsung S4
-        (because Broadcom doesn't support Mifare Classic)
-        */
-    
+    /*
+    Process non-NDEF tag data from the nfcEvent
+    This includes
+    * Non NDEF NFC Tags
+    * NDEF-Formatable Tags
+    * Mifare Classic Tags on Nexus 4, Samsung S4
+    (because Broadcom doesn't support Mifare Classic)
+    */
+
     onNonNdef: function(nfcEvent) {
         app.clear('messageDiv');
-        app.display("Event Type: " + nfcEvent.type,'messageDiv');
         var tag = nfcEvent.tag;
-        app.display("Tag ID: " + nfc.bytesToHexString(tag.id),'messageDiv'); 
-    },
-    /*
-    writes @tag to the message div:
-    */
-    showTag: function(tag) {
-        // Display user info
-        app.clear();
-        app.display("Event Type: " + nfcEvent.type,'divId');
-        app.display("Tag ID: " + nfc.bytesToHexString(tag.id));
-        app.display("Tag Type: " + tag.type);
-        app.display("Max Size: " + tag.maxSize + " bytes");
-        app.display("Is Writable: " + tag.isWritable);
-        app.display("Can Make Read Only: " + tag.canMakeReadOnly);
-
-
-        // if there is an NDEF message on the tag, display it:
-        var thisMessage = tag.ndefMessage;
-        if (thisMessage !== null) {
-            // get and display the NDEF record count:
-            app.display("Tag has NDEF message with " + thisMessage.length
-            + " record" + (thisMessage.length === 1 ? ".":"s."));
-            app.display("Message Contents: ");
-            app.showMessage(thisMessage);
-        }
-
-
+        app.id = nfc.bytesToHexString(tag.id); 
+        window.location.href = 'userInfo.html' + '#' + app.id;
+      
     },
 
     /*
@@ -125,7 +101,7 @@ var app = {
         app.showRecord(record);
         // show it
         }
-        },
+    },
     /*
     writes @record to the message div:
     */
@@ -151,8 +127,6 @@ var app = {
         
         var label = document.createTextNode(message),
         linebreak = document.createElement("br");
-
-
         elem = document.getElementById(div);
         elem.appendChild(linebreak);
         elem.appendChild(label);
@@ -163,8 +137,32 @@ var app = {
     clear: function(div){
         elem = document.getElementById(div);
         elem.innerHTML = "";
+    },
+
+    userInfo: function(message){
+        app.clear('userInfDiv');
+        app.id =  message;
+        app.display(message, 'userInfDiv');
+    },
+
+    goToRegresar: function(){
+        
+        window.location.href = 'regresar.html' + '#' + app.id;
+        
+    },
+
+    goTosSacar: function(){
+        window.location.href = 'sacar.html' + '#' + app.id;
+    },
+    
+    regresar: function(id){
+        app.id = id;
+        app.display("regresale conpadre " + app.id, 'regresar');
+    },
+    sacar: function(id){
+        app.id = id;
+        app.display("sacale conpadre " + app.id, 'sacar');
     }
 
-    
 };
 
